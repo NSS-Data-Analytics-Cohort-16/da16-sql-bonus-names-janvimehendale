@@ -53,7 +53,14 @@ SELECT
 	COUNT(*) FILTER (WHERE gender= 'M') AS male_count,
 	COUNT(*) FILTER (WHERE gender= 'F') AS female_count
 FROM names;
-	
+--------------------------------------------------------------
+--OR
+
+SELECT gender, COUNT(*)
+FROM names
+GROUP BY gender
+ORDER BY COUNT(*) DESC;
+
 -------------------------------------------------------------------------------------------
 
 -- 8.	What are the most popular male and female names overall (i.e., the most total registrations)?
@@ -61,52 +68,97 @@ FROM names;
 --446 names with 139 registration each - Female
 SELECT 
 	name, 
-	COUNT(name) As male_name
+	COUNT(*) As most_popular_name,
+	gender
 FROM names
-WHERE gender = 'M'
-GROUP BY name
-ORDER BY male_name DESC;
+GROUP BY name, gender
+ORDER BY most_popular_name DESC;
 
-SELECT 
-	name, 
-	COUNT(name) As female_name
-FROM names
-WHERE gender = 'F'
-GROUP BY name
-ORDER BY female_name DESC;
+--OR-- both have different results
 
-
-SELECT 
-	name,
-	COUNT(name) FILTER (WHERE gender= 'M') AS most_popular_male, 
-	COUNT(name) FILTER (WHERE gender= 'F') AS most_popular_female
+SELECT name, COUNT(*)
 FROM names
 GROUP BY name
-ORDER BY COUNT(name) DESC;
+ORDER BY COUNT(*) DESC;
 
 -------------------------------------------------------------------------------------------
 -- 9.	What are the most popular boy and girl names of the first decade of the 2000s (2000 - 2009)?
+F = Darrah, M = Jamarian
+SELECT 
+	name, 
+	COUNT(*),
+	gender
+FROM names
+WHERE year BETWEEN '2000' AND '2009'
+GROUP BY name, gender
+ORDER BY COUNT(*) DESC;
 
 -------------------------------------------------------------------------------------------
 
 -- 10.	Which year had the most variety in names (i.e. had the most distinct names)?
+--Year 2008
+SELECT 
+	COUNT(DISTINCT name) AS variety,
+	year
+FROM names
+GROUP BY year
+ORDER BY variety DESC;
 
 -------------------------------------------------------------------------------------------
 
--- 11.	What is the most popular name for a girl that starts with the letter X?
+-- 11.	What is the most popular name for a girl that starts with the letter X? - Xenia
+SELECT
+	name,
+	COUNT(*) AS count
+FROM names
+WHERE name ILIKE 'X%'
+AND
+gender = 'F'
+GROUP BY name
+ORDER BY count DESC;
+
 
 -------------------------------------------------------------------------------------------
 
--- 12.	How many distinct names appear that start with a 'Q', but whose second letter is not 'u'?
+-- 12.	How many distinct names appear that start with a 'Q', but whose second letter is not 'u - 46
+SELECT
+	DISTINCT name,
+	COUNT(*) AS count
+FROM names
+WHERE name ILIKE 'Q%'
+AND name NOT ILIKE 'Qu%'
+GROUP BY name
+ORDER BY count DESC;
 
 -------------------------------------------------------------------------------------------
 
--- 13.	Which is the more popular spelling between "Stephen" and "Steven"? Use a single query to answer this question.
+-- 13.	Which is the more popular spelling between "Stephen" and "Steven"? 
+--Use a single query to answer this question. - Stephen with 230 count.
+SELECT
+	name,
+	COUNT(*) AS most_popuplar_spelling
+FROM names
+WHERE name = 'Stephen'
+OR
+name = 'Steven'
+GROUP BY name
+ORDER BY most_popuplar_spelling DESC;
+	
 
 -------------------------------------------------------------------------------------------
 
--- 14.	What percentage of names are "unisex" - that is what percentage of names have been used both for boys and for girls?
-
+-- 14.	What percentage of names are "unisex" - that is what percentage of names have been used
+--both for boys and for girls?
+SELECT
+	COUNT(*),
+	name
+	--COUNT(name)*100/COUNT(name)
+FROM names
+WHERE 
+gender = 'M'
+AND 
+gender = 'F'
+GROUP BY name;
 -------------------------------------------------------------------------------------------
 
 -- 15.	How many names have made an appearance in every single year since 1880?
