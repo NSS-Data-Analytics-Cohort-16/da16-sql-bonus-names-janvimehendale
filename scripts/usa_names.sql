@@ -68,7 +68,7 @@ ORDER BY COUNT(*) DESC;
 SELECT 
 	name AS most_popular_name, 
 	gender,
-	count(num_registered) AS total_registrations
+	COUNT(num_registered) AS total_registrations
 FROM names
 GROUP BY gender, name
 ORDER BY total_registrations DESC;
@@ -143,18 +143,25 @@ GROUP BY name
 HAVING COUNT(DISTINCT gender) = 2
 ORDER BY percentage DESC;
 
+SELECT 
+AVG(CASE WHEN gender = 'M' THEN 'male') AS male_count,
+(CASE WHEN gender = 'F' THEN 'female') AS female_count
+		 --ELSE 'most_unisex' END
+FROM names;
+
 ------------------------------------------------------------------------------------------
 
--- 15.	How many names have made an appearance in every single year since 1880?
+-- 15.	How many names have made an appearance in every single year since 1880? 
+-- how to find reoccurrence?
 SELECT
 	DISTINCT year,
-	COUNT(name)
-FROM names
+	COUNT(name) 
+	FROM names
 WHERE 
 	year BETWEEN 1880 AND 2018
 GROUP BY name, year
 ORDER BY year;
--------------------------------------------------------------------------------------------
+--------------------How many names have only appeared in one year?-----------------------------------------------------------------------
 
 -- 16.	How many names have only appeared in one year?
 SELECT 
@@ -167,17 +174,48 @@ WHERE
 
 -------------------------------------------------------------------------------------------
 
--- 17.	How many names only appeared in the 1950s?
+-- 17.	How many names only appeared in the 1950s? -9279
+
+SELECT
+	COUNT(DISTINCT name)
+FROM names
+	WHERE year = '1950';
 
 -------------------------------------------------------------------------------------------
 
--- 18.	How many names made their first appearance in the 2010s?
-
+-- 18.	How many names made their first appearance in the 2010s? 31627
+SELECT
+	COUNT(DISTINCT name)
+FROM names
+	WHERE year = '2010';
 -------------------------------------------------------------------------------------------
 
--- 19.	Find the names that have not be used in the longest.
+-- 19.	Find the names that have not be used in the longest. - 3610
+--"Iva"
+--"Carolyn"
+--"Lovey"
+--"Clarabelle"
+--"Victoria"
+--"Hjalmer"
+
+SELECT
+	DISTINCT name
+FROM names
+	WHERE year < '1890';
 
 -------------------------------------------------------------------------------------------
 
 -- 20.	Come up with a question that you would like to answer using this dataset.
 --Then write a query to answer this question.
+--Find the count of names starting with different letter, A to Z. 
+SELECT 
+	COUNT(DISTINCT name)
+FROM names
+WHERE name ILIKE 'A%'
+;
+
+SELECT 
+	COUNT(CASE WHEN name ILIKE 'A%' THEN 'A') 
+	COUNT(CASE WHEN name ILIKE 'B%' THEN 'B') 
+	END AS letter
+FROM names;
